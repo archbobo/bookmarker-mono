@@ -1,0 +1,10 @@
+
+
+plugins {
+	id 'com.github.lkishalmi.gatling' version '0.7.1'
+}
+
+repositories {
+	mavenCentral()
+	jcenter()
+}
