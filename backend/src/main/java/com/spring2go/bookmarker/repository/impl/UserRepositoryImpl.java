@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
+
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -33,6 +36,14 @@ public class UserRepositoryImpl implements UserRepository {
     public User findByEmail(String email) {
         return mongoTemplate.findOne(
                 query(where("email").is(email)),
+                User.class
+        );
+    }
+
+    @Override
+    public List<User> findByIds(Collection<String> ids) {
+        return mongoTemplate.find(
+                query(where("id").in(ids)),
                 User.class
         );
     }

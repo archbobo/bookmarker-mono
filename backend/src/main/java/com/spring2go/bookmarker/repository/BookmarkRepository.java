@@ -8,4 +8,8 @@ import java.util.List;
 public interface BookmarkRepository {
     List<Bookmark> findByCreatedById(String createdById, Sort sort);
     List<Bookmark> findByTag(String tagName, Sort sort);
+    List<Bookmark> findAll(Sort sort);
+    Bookmark insert(Bookmark bookmark);
+    Bookmark findById(String id);
+    long deleteById(String id);
 }

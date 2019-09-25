@@ -1,14 +1,13 @@
 package com.spring2go.bookmarker.repository.impl;
 
 import com.spring2go.bookmarker.model.Bookmark;
-import com.spring2go.bookmarker.model.Tag;
 import com.spring2go.bookmarker.repository.BookmarkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -29,15 +28,35 @@ public class BookmarkRepositoryImpl implements BookmarkRepository {
 
     @Override
     public List<Bookmark> findByTag(String tagName, Sort sort) {
-        Tag tag = mongoTemplate.findOne(
-                query(where("name").is(tagName)),
-                Tag.class
-        );
-        if (tag == null) return new ArrayList<>();
         List<Bookmark> bookmarkList = mongoTemplate.find(
-                query(where("tagIds").in(tag.getId())).with(sort),
+                query(where("tags").in(tagName)).with(sort),
                 Bookmark.class
         );
         return bookmarkList;
+    }
+
+    @Override
+    public List<Bookmark> findAll(Sort sort) {
+        Query query = new Query();
+        query.with(sort);
+        return mongoTemplate.find(query, Bookmark.class);
+    }
+
+    @Override
+    public Bookmark insert(Bookmark bookmark) {
+        return mongoTemplate.insert(bookmark);
+    }
+
+    @Override
+    public Bookmark findById(String id) {
+        return mongoTemplate.findById(id, Bookmark.class);
+    }
+
+    @Override
+    public long deleteById(String id) {
+        return mongoTemplate.remove(
+                query(where("id").is(id)),
+                Bookmark.class
+        ).getDeletedCount();
     }
 }

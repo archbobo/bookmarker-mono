@@ -15,6 +15,11 @@ public class TagRepositoryImpl implements TagRepository {
     private  MongoTemplate mongoTemplate;
 
     @Override
+    public Tag insert(Tag tag) {
+        return mongoTemplate.insert(tag);
+    }
+
+    @Override
     public Tag findByName(String name) {
         return mongoTemplate.findOne(
                 query(where("name").is(name)),

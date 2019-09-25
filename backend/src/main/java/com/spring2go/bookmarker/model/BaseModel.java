@@ -4,13 +4,13 @@ import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 public abstract class BaseModel {
     @CreatedDate
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 }
