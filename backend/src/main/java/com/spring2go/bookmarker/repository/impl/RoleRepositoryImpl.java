@@ -15,10 +15,20 @@ public class RoleRepositoryImpl implements RoleRepository {
     private MongoTemplate mongoTemplate;
 
     @Override
+    public Role insert(Role role) {
+        return mongoTemplate.insert(role);
+    }
+
+    @Override
     public Role findByName(String name) {
         return mongoTemplate.findOne(
                 query(where("name").is(name)),
                 Role.class
         );
+    }
+
+    @Override
+    public long deleteAll() {
+        return mongoTemplate.remove(Role.class).all().getDeletedCount();
     }
 }

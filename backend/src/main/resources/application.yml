@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: Bookmarker
+info:
+  app:
+    name: Bookmarker
+    description: BookMarker REST API
+    version: @project.version@
+  contact:
+    name: bobo
+    email: bobo@spring2go.com
+    url: https://spring2go.com
+logging:
+  level:
+    com.spring2go: debug
+    org.springframework.web.servlet.mvc.method.annotation: TRACE
+jasypt:
+  encryptor:
+    password: dummy
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+bookmarker:
+  jwt:
+    issuer: BookMarker
+    header: Authorization
+    secret: ENC(qMZ/E1jhRSmmNnUhB9mOdw==)
+    expires-in: 604800

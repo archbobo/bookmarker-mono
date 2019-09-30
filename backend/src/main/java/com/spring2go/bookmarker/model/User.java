@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -22,5 +23,5 @@ public class User extends BaseModel {
     private String email;
     private String password;
     private String name;
-    private Set<String> roleNames;
+    private Set<String> roleNames = new HashSet<>();
 }

@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -20,5 +21,5 @@ public class UserDto {
     @NotBlank(message = "密码不能为空")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-    private Set<String> roleIds;
+    private Set<String> roleNames = new HashSet<>();
 }

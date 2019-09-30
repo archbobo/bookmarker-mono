@@ -1,0 +1,41 @@
+{
+  "groups": [
+    {
+      "name": "bookmarker",
+      "type": "com.spring2go.bookmarker.config.BookmarkerProperties",
+      "sourceType": "com.spring2go.bookmarker.config.BookmarkerProperties"
+    },
+    {
+      "name": "bookmarker.jwt",
+      "type": "com.spring2go.bookmarker.config.BookmarkerProperties$JwtConfig",
+      "sourceType": "com.spring2go.bookmarker.config.BookmarkerProperties",
+      "sourceMethod": "getJwt()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "bookmarker.jwt.expires-in",
+      "type": "java.lang.Long",
+      "sourceType": "com.spring2go.bookmarker.config.BookmarkerProperties$JwtConfig"
+    },
+    {
+      "name": "bookmarker.jwt.header",
+      "type": "java.lang.String",
+      "sourceType": "com.spring2go.bookmarker.config.BookmarkerProperties$JwtConfig",
+      "defaultValue": "Authorization"
+    },
+    {
+      "name": "bookmarker.jwt.issuer",
+      "type": "java.lang.String",
+      "sourceType": "com.spring2go.bookmarker.config.BookmarkerProperties$JwtConfig",
+      "defaultValue": "bookmarker"
+    },
+    {
+      "name": "bookmarker.jwt.secret",
+      "type": "java.lang.String",
+      "sourceType": "com.spring2go.bookmarker.config.BookmarkerProperties$JwtConfig",
+      "defaultValue": ""
+    }
+  ],
+  "hints": []
+}

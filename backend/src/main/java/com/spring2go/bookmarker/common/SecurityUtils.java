@@ -1,4 +1,4 @@
-package com.spring2go.bookmarker.utils;
+package com.spring2go.bookmarker.common;
 
 import com.spring2go.bookmarker.config.security.SecurityUser;
 import com.spring2go.bookmarker.constant.Constants;

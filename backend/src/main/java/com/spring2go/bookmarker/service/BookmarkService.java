@@ -1,9 +1,10 @@
 package com.spring2go.bookmarker.service;
 
+import com.spring2go.bookmarker.common.api.ResultCode;
+import com.spring2go.bookmarker.common.exception.ServiceException;
 import com.spring2go.bookmarker.dto.BookmarkByTagDto;
 import com.spring2go.bookmarker.dto.BookmarkDto;
 import com.spring2go.bookmarker.dto.BookmarkListDto;
-import com.spring2go.bookmarker.exception.TagNotFoundException;
 import com.spring2go.bookmarker.model.Bookmark;
 import com.spring2go.bookmarker.model.Tag;
 import com.spring2go.bookmarker.model.User;
@@ -15,11 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import springfox.documentation.annotations.Cacheable;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,7 +37,6 @@ public class BookmarkService {
     private UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    @Cacheable("bookmarks")
     public BookmarkListDto getAllBookmarks() {
         log.debug("process=get_all_bookmarks");
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
@@ -48,7 +46,6 @@ public class BookmarkService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable("bookmarks-by-user")
     public BookmarkListDto getBookmarksByUser(String userId) {
         log.debug("process=get_bookmarks_by_user_id, user_id=" + userId);
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
@@ -58,11 +55,10 @@ public class BookmarkService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable("bookmarks-by-tag")
     public BookmarkByTagDto getBookmarksByTag(String tagName) {
         Tag tag = tagRepository.findByName(tagName);
         if (tag == null) {
-            throw new TagNotFoundException("Tag " + tagName + " not Found");
+            throw new ServiceException(ResultCode.NOT_FOUND, "Tag " + tagName + " not Found");
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         List<Bookmark> bookmarkList = bookmarkRepository.findByTag(tagName, sort);
@@ -73,15 +69,13 @@ public class BookmarkService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable("bookmark-by-id")
-    BookmarkDto getBookmarkById(String id) {
+    public BookmarkDto getBookmarkById(String id) {
         log.debug("process=get_bookmark_by_id, id" + id);
         Bookmark bookmark = bookmarkRepository.findById(id);
         if (bookmark == null) return null;
         return buildBookmarkResult(bookmark);
     }
 
-    @CacheEvict(value = {"bookmarks", "bookmarks-by-tag", "bookmarks-by-user"})
     public BookmarkDto createBookmark(BookmarkDto bookmarkDto) {
         log.debug("process=create_bookmark, url=" + bookmarkDto.getUrl());
         Bookmark bookmark = convert2Model(bookmarkDto);
@@ -89,7 +83,6 @@ public class BookmarkService {
         return buildBookmarkResult(createdBookmark);
     }
 
-    @CacheEvict(value = {"bookmarks", "bookmark-by-id", "bookmarks-by-tag", "bookmarks-by-user"})
     public void deleteBookmark(String id) {
         log.debug("process=delete_bookmark_by_id, id=" + id);
         bookmarkRepository.deleteById(id);

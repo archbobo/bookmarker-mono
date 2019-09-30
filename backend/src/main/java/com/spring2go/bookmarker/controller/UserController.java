@@ -1,13 +1,12 @@
 package com.spring2go.bookmarker.controller;
 
-import com.spring2go.bookmarker.annotation.Loggable;
+import com.spring2go.bookmarker.common.api.ResultCode;
+import com.spring2go.bookmarker.common.exception.ServiceException;
 import com.spring2go.bookmarker.dto.ChangePasswordRequest;
 import com.spring2go.bookmarker.dto.CreateUserRequest;
 import com.spring2go.bookmarker.dto.UserDto;
-import com.spring2go.bookmarker.exception.BadRequestException;
-import com.spring2go.bookmarker.exception.UserNotFoundException;
 import com.spring2go.bookmarker.service.UserService;
-import com.spring2go.bookmarker.utils.SecurityUtils;
+import com.spring2go.bookmarker.common.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("api/users")
-@Loggable
 @Slf4j
 public class UserController {
     @Autowired
@@ -40,11 +38,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
         log.info("process=create_user, user_email=" + createUserRequest.getEmail());
-        UserDto userDto = new UserDto()
-                .setName(createUserRequest.getName())
-                .setEmail(createUserRequest.getEmail())
-                .setPassword(createUserRequest.getPassword());
-        return userService.createUser(userDto);
+        return userService.createUser(createUserRequest);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -52,7 +46,7 @@ public class UserController {
     public UserDto updateUser(@PathVariable String id, @RequestBody @Valid UserDto user) {
         log.info("process=update_user, user_id" + id);
         if (!StringUtils.equals(id, SecurityUtils.loginUser().getId()) && !SecurityUtils.isCurrentAdmin()) {
-            throw new BadRequestException("你不能修改其他用户数据");
+            throw new ServiceException(ResultCode.UN_AUTHORIZED, "你不能修改其他用户数据");
         }
         user.setId(id);
         return userService.updateUser(user);
@@ -65,7 +59,7 @@ public class UserController {
         UserDto userDto = userService.getUserById(id);
         if (userDto == null ||
                 (!StringUtils.equals(userDto.getId(), SecurityUtils.loginUser().getId()) && !SecurityUtils.isCurrentAdmin())) {
-            throw new UserNotFoundException("User not found with id=" + id);
+            throw new ServiceException(ResultCode.NOT_FOUND, "未找到用户, id=" + id);
         }
         userService.deleteUser(id);
     }

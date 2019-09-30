@@ -13,4 +13,5 @@ public interface UserRepository {
     List<User> findByIds(Collection<String> ids);
     long deleteById(String id);
     boolean checkExistsByEmail(String email);
+    long deleteAll();
 }

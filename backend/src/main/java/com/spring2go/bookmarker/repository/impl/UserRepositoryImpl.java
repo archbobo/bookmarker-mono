@@ -63,4 +63,9 @@ public class UserRepositoryImpl implements UserRepository {
                 User.class
         );
     }
+
+    @Override
+    public long deleteAll() {
+        return mongoTemplate.remove(User.class).all().getDeletedCount();
+    }
 }
