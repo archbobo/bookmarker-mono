@@ -46,7 +46,7 @@ public class UserService {
 
     public UserDto createUser(CreateUserRequest request) {
         if (userRepository.checkExistsByEmail(request.getEmail())) {
-            throw new ServiceException(ResultCode.EMAIL_USED, "这个电子邮件地址已经被使用 " + request.getEmail());
+            throw new ServiceException(ResultCode.EMAIL_USED, "这个电子邮件地址已经被使用, email = " + request.getEmail());
         }
         User newUser = modelMapper.map(request, User.class);
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
@@ -59,7 +59,7 @@ public class UserService {
     public UserDto updateUser(UserDto userDto) {
         User existingUser = userRepository.findById(userDto.getId());
         if (existingUser == null) {
-            throw new ServiceException(ResultCode.NOT_FOUND, "未找到这个id的用户 " + userDto.getId());
+            throw new ServiceException(ResultCode.NOT_FOUND, "未找到这个id的用户, id = " + userDto.getId());
         }
         User user2Update = modelMapper.map(userDto, User.class);
         user2Update.setPassword(existingUser.getPassword());
@@ -75,7 +75,7 @@ public class UserService {
     public UserDto changePassword(String email, ChangePasswordRequest changePasswordRequest) {
         User existingUser = userRepository.findByEmail(email);
         if (existingUser == null) {
-            throw new ServiceException(ResultCode.EMAIL_USED, "这个电子邮件地址已经被使用 " + email);
+            throw new ServiceException(ResultCode.NOT_FOUND, "未找到这个邮件地址的用户, email = " + email);
         }
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), existingUser.getPassword())) {
             throw new ServiceException(ResultCode.UN_AUTHORIZED, "旧密码不匹配");
