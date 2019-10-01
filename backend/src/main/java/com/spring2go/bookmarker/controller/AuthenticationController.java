@@ -1,5 +1,7 @@
 package com.spring2go.bookmarker.controller;
 
+import com.spring2go.bookmarker.common.api.Result;
+import com.spring2go.bookmarker.common.api.ResultCode;
 import com.spring2go.bookmarker.config.BookmarkerProperties;
 import com.spring2go.bookmarker.config.security.CustomUserDetailsService;
 import com.spring2go.bookmarker.config.security.SecurityUser;
@@ -11,8 +13,6 @@ import com.spring2go.bookmarker.model.User;
 import com.spring2go.bookmarker.common.SecurityUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,7 +39,7 @@ public class AuthenticationController {
     private ModelMapper modelMapper;
 
     @PostMapping(value = {"/auth/login"})
-    public AuthenticationResponse createAuthenticationToken(@RequestBody AuthenticationRequest credentials) {
+    public Result<AuthenticationResponse> createAuthenticationToken(@RequestBody AuthenticationRequest credentials) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword())
         );
@@ -47,15 +47,17 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         SecurityUser user = (SecurityUser) authentication.getPrincipal();
-        String jws = tokenHelper.generateToken(user.getUsername());
-        return new AuthenticationResponse().setAccessToken(jws).setExpiresIn(bookmarkerProperties.getJwt().getExpiresIn());
+        String token = tokenHelper.generateToken(user.getUsername());
+        AuthenticationResponse authenticationResponse =
+                new AuthenticationResponse().setAccessToken(token).setExpiresIn(bookmarkerProperties.getJwt().getExpiresIn());
+        return Result.success(authenticationResponse);
     }
 
     @PostMapping(value = {"/auth/refresh"})
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<AuthenticationResponse> refreshAuthenticationToken(HttpServletRequest request) {
+    public Result<AuthenticationResponse> refreshAuthenticationToken(HttpServletRequest request) {
         String authToken = tokenHelper.getToken(request);
-        if (authToken == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (authToken == null) return Result.fail(ResultCode.UN_AUTHORIZED, "没有访问令牌");
 
         String email = tokenHelper.getUsernameFromToken(authToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
@@ -65,18 +67,18 @@ public class AuthenticationController {
             AuthenticationResponse authenticationResponse = new AuthenticationResponse();
             authenticationResponse.setAccessToken(refreshToken);
             authenticationResponse.setExpiresIn(bookmarkerProperties.getJwt().getExpiresIn());
-            return ResponseEntity.ok(authenticationResponse);
+            return Result.success(authenticationResponse);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return Result.fail(ResultCode.UN_AUTHORIZED, "访问令牌无效");
         }
     }
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<UserDto> me() {
+    public Result<UserDto> me() {
         User user = SecurityUtils.loginUser();
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (user == null) return Result.fail(ResultCode.UN_AUTHORIZED, "用户未经登录授权");
         UserDto userDto = modelMapper.map(user, UserDto.class);
-        return ResponseEntity.ok(userDto);
+        return Result.success(userDto);
     }
 }

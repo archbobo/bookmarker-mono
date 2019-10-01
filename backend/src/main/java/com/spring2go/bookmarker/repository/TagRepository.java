@@ -8,4 +8,5 @@ public interface TagRepository {
     Tag insert(Tag tag);
     Tag findByName(String name);
     List<Tag> fingAll();
+    long deleteAll();
 }

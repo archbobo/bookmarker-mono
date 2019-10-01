@@ -20,9 +20,9 @@ public class BookmarkDto {
     private String createdUserId;
     @JsonProperty("created_user_name")
     private String createdUserName;
-    @JsonProperty("created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
-    @JsonProperty("updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @JsonProperty(value = "created_at", access = JsonProperty.Access.READ_ONLY)
+    private LocalDateTime createdAt;
+    @JsonProperty(value = "updated_at", access = JsonProperty.Access.READ_ONLY)
+    private LocalDateTime updatedAt;
     private Set<String> tags = new HashSet<>();
 }

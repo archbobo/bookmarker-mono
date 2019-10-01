@@ -33,4 +33,9 @@ public class TagRepositoryImpl implements TagRepository {
     public List<Tag> fingAll() {
         return mongoTemplate.findAll(Tag.class);
     }
+
+    @Override
+    public long deleteAll() {
+        return mongoTemplate.remove(Tag.class).all().getDeletedCount();
+    }
 }

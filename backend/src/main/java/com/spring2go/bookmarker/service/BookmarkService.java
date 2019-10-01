@@ -80,6 +80,9 @@ public class BookmarkService {
         log.debug("process=create_bookmark, url=" + bookmarkDto.getUrl());
         Bookmark bookmark = convert2Model(bookmarkDto);
         Bookmark createdBookmark = bookmarkRepository.insert(bookmark);
+        bookmarkDto.setId(createdBookmark.getId());
+        bookmarkDto.setCreatedAt(createdBookmark.getCreatedAt());
+        bookmarkDto.setUpdatedAt(createdBookmark.getUpdatedAt());
         return buildBookmarkResult(createdBookmark);
     }
 

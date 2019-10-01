@@ -12,4 +12,5 @@ public interface BookmarkRepository {
     Bookmark insert(Bookmark bookmark);
     Bookmark findById(String id);
     long deleteById(String id);
+    long deleteAll();
 }

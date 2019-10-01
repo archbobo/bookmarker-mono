@@ -59,4 +59,9 @@ public class BookmarkRepositoryImpl implements BookmarkRepository {
                 Bookmark.class
         ).getDeletedCount();
     }
+
+    @Override
+    public long deleteAll() {
+        return mongoTemplate.remove(Bookmark.class).all().getDeletedCount();
+    }
 }

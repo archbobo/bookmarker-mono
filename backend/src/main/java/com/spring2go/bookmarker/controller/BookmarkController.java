@@ -1,5 +1,6 @@
 package com.spring2go.bookmarker.controller;
 
+import com.spring2go.bookmarker.common.api.Result;
 import com.spring2go.bookmarker.common.api.ResultCode;
 import com.spring2go.bookmarker.common.exception.ServiceException;
 import com.spring2go.bookmarker.dto.BookmarkByTagDto;
@@ -9,8 +10,6 @@ import com.spring2go.bookmarker.service.BookmarkService;
 import com.spring2go.bookmarker.common.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,42 +20,49 @@ public class BookmarkController {
     private BookmarkService bookmarkService;
 
     @GetMapping
-    public BookmarkListDto getAllBookmarks(@RequestParam(name = "userId", required = false) String userId) {
+    public Result<BookmarkListDto> getAllBookmarks(@RequestParam(name = "userId", required = false) String userId) {
+        BookmarkListDto bookmarkListDto = null;
         if (userId == null) {
-            return bookmarkService.getAllBookmarks();
+            bookmarkListDto = bookmarkService.getAllBookmarks();
         } else {
-            return bookmarkService.getBookmarksByUser(userId);
+            bookmarkListDto = bookmarkService.getBookmarksByUser(userId);
         }
+        return Result.success(bookmarkListDto);
     }
 
     @GetMapping("/tagged/{tag}")
-    public BookmarkByTagDto getBookmarksByTag(@PathVariable("tag") String tag) {
-        return bookmarkService.getBookmarksByTag(tag);
+    public Result<BookmarkByTagDto> getBookmarksByTag(@PathVariable("tag") String tag) {
+        BookmarkByTagDto bookmarkByTagDto =  bookmarkService.getBookmarksByTag(tag);
+        return Result.success(bookmarkByTagDto);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<BookmarkDto> getBookmarkById(@PathVariable String id) {
+    public Result<BookmarkDto> getBookmarkById(@PathVariable String id) {
         BookmarkDto bookmarkDto = bookmarkService.getBookmarkById(id);
-        if (bookmarkDto != null) return ResponseEntity.ok(bookmarkDto);
-        return ResponseEntity.notFound().build();
+        if (bookmarkDto != null) return Result.success(bookmarkDto);
+        return Result.fail(ResultCode.NOT_FOUND, "未找到指定id的收藏, id = " + id);
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_USER')")
-    public BookmarkDto createBookmark(@RequestBody BookmarkDto bookmarkDto) {
+    public Result<BookmarkDto> createBookmark(@RequestBody BookmarkDto bookmarkDto) {
         bookmarkDto.setCreatedUserId(SecurityUtils.loginUser().getId());
-        return bookmarkService.createBookmark(bookmarkDto);
+        BookmarkDto createdBookmarkDto = bookmarkService.createBookmark(bookmarkDto);
+        return Result.success(createdBookmarkDto);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public void deleteBookmark(@PathVariable String id) {
+    public Result deleteBookmark(@PathVariable String id) {
         BookmarkDto bookmarkDto = bookmarkService.getBookmarkById(id);
-        if (bookmarkDto == null || (!StringUtils.equals(bookmarkDto.getCreatedUserId(), SecurityUtils.loginUser().getId()) &&
-                !SecurityUtils.isCurrentAdmin())) {
+        if (bookmarkDto == null) {
             throw new ServiceException(ResultCode.NOT_FOUND, "未找到该收藏, id = " + id);
         }
+        if (!StringUtils.equals(bookmarkDto.getCreatedUserId(), SecurityUtils.loginUser().getId()) &&
+                !SecurityUtils.isCurrentAdmin()) {
+            throw new ServiceException(ResultCode.UN_AUTHORIZED, "无权限删除他人的收藏, id = " + id);
+        }
         bookmarkService.deleteBookmark(id);
+        return Result.success();
     }
 }

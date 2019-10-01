@@ -1,5 +1,6 @@
 package com.spring2go.bookmarker.controller;
 
+import com.spring2go.bookmarker.common.api.Result;
 import com.spring2go.bookmarker.model.Tag;
 import com.spring2go.bookmarker.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,8 @@ public class TagController {
     private TagRepository tagRepository;
 
     @GetMapping("/tags")
-    public List<Tag> tags() {
-        return tagRepository.fingAll();
+    public Result<List<Tag>> tags() {
+        List<Tag> tagList = tagRepository.fingAll();
+        return Result.success(tagList);
     }
 }
