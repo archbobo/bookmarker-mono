@@ -34,7 +34,7 @@ public interface BookmarkerClient {
     Result<AuthenticationResponse> createAuthenticationToken(@RequestBody AuthenticationRequest credentials);
 
     @PostMapping(value = {"/auth/refresh"})
-    Result<AuthenticationResponse> refreshAuthenticationToken(HttpServletRequest request);
+    Result<AuthenticationResponse> refreshAuthenticationToken();
 
     @GetMapping("/me")
     Result<UserDto> me();

@@ -15,6 +15,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -99,6 +100,12 @@ public class GlobalExceptionHandler {
     public Result handleError(PermissionDeniedException e) {
         log.error("Permission Denied", e);
         return Result.fail(e.getResultCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public Result handleError(AccessDeniedException e) {
+        log.error("Access Denied", e);
+        return Result.fail(ResultCode.UN_AUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler(Throwable.class)
