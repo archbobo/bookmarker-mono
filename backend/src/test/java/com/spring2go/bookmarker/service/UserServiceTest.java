@@ -118,7 +118,6 @@ public class UserServiceTest {
         ChangePasswordRequest request = new ChangePasswordRequest().setOldPassword(createUserRequest.getPassword())
                 .setNewPassword("test_password1_new");
         updatedUserDto = userService.changePassword(userDto.getEmail(), request);
-        userDto.setPassword(updatedUserDto.getPassword()); // 密码哈希已经更新
         assertThat(updatedUserDto).isEqualTo(userDto);
     }
 

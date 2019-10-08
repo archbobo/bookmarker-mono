@@ -1,4 +1,6 @@
 spring:
+  #autoconfigure:
+  #  exclude: org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
   application:
     name: Bookmarker
 info:

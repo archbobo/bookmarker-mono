@@ -47,6 +47,7 @@ public class BookmarkController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public Result<BookmarkDto> createBookmark(@RequestBody BookmarkDto bookmarkDto) {
         bookmarkDto.setCreatedUserId(SecurityUtils.loginUser().getId());
+        bookmarkDto.setCreatedUserName(SecurityUtils.loginUser().getName());
         BookmarkDto createdBookmarkDto = bookmarkService.createBookmark(bookmarkDto);
         return Result.success(createdBookmarkDto);
     }

@@ -18,8 +18,6 @@ public class UserDto {
     @NotBlank(message = "电子邮件地址不能为空")
     @Email(message = "电子邮件地址无效")
     private String email;
-    @NotBlank(message = "密码不能为空")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
+    //private String password;
     private Set<String> roleNames = new HashSet<>();
 }
