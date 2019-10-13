@@ -15,15 +15,9 @@ info:
 logging:
   level:
     com.spring2go: debug
-    org.springframework.web.servlet.mvc.method.annotation: TRACE
 jasypt:
   encryptor:
     password: dummy
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
 bookmarker:
   jwt:
     issuer: BookMarker
